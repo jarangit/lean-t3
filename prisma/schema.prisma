@@ -15,8 +15,69 @@ generator client {
 model Post {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-    content  String @db.VarChar(255)
-    authorId String
+    content   String   @db.VarChar(255)
+    authorId  String
+
     @@index([authorId])
-    
+}
+
+model Blog {
+    authorId  Int?
+    content   String?
+    id        Int     @id @default(autoincrement())
+    published Boolean @default(false)
+    title     String
+}
+
+model User {
+    email      String      @unique
+    id         Int         @id @default(autoincrement())
+    name       String?
+    password   String
+    restaurant Restaurant?
+}
+
+model Restaurant {
+    id         Int        @id @default(autoincrement())
+    name       String
+    owner       User       @relation(fields: [ownerId], references: [id])
+    ownerId     Int        @unique // relation scalar field (used in the `@relation` attribute above)
+    catefories Category[]
+    menus      Menu[]
+    neats      Meat[]
+    Topping    Topping[]
+}
+
+model Category {
+    id           Int         @id @default(autoincrement())
+    name         String
+    Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+    restaurantId Int?
+}
+
+model Menu {
+    id           Int         @id @default(autoincrement())
+    name         String
+    Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+    restaurantId Int?
+    Meat         Meat?       @relation(fields: [meatId], references: [id])
+    meatId       Int?
+    Topping      Topping?    @relation(fields: [toppingId], references: [id])
+    toppingId    Int?
+}
+
+model Meat {
+    id           Int         @id @default(autoincrement())
+    name         String
+    Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+    restaurantId Int?
+    menus        Menu[]
+}
+
+model Topping {
+    id           Int         @id @default(autoincrement())
+    name         String
+    Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+    restaurantId Int?
+    menus        Menu[]
 }
